@@ -4,6 +4,7 @@ import helper_funcs as help
 import help_creds as creds
 import os
 import sys
+
 ssl.SSLContext.verify_mode == ssl.VerifyMode.CERT_OPTIONAL
 
 plex_token=creds.get_plex_token()
