@@ -1,12 +1,13 @@
 import requests
 import ssl
 import helper_funcs as help
+import help_creds as creds
 import os
 import sys
 ssl.SSLContext.verify_mode == ssl.VerifyMode.CERT_OPTIONAL
 
-plex_token=""
-plex_url=["","",32400]
+plex_token=creds.get_plex_token()
+plex_url=[get_plex_url()[0],get_plex_url()[1],32400]
 plex_token = [["X-Plex-Token",plex_token]]
 
 STATIC_FILES = {
