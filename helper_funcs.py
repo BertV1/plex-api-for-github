@@ -112,6 +112,7 @@ def show_help():
     \n -s\t get server settings, stored in xml file
     \n -l\t get libraries, stored in xml file, and show them.
     \n -l key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
+    \n -m "<name>" get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
     \n XML files are stored in user home.
     """
     print(help_string)
