@@ -57,7 +57,7 @@ def get_library_content(str_base_url,lst_token,lib_key):
             help.write_xml(req_resp.content,STATIC_FILES['LIB_CONTENT'])
 
 def get_collections(str_base_url,lst_token,lib_key):
-    print("suck it, you are collecting")
+    print("nooo it, you are collecting")
     
 
 
