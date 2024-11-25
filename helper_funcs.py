@@ -114,7 +114,7 @@ def lib_key_exists(lib_key):
     # TODO: check if lib_key in lib_keys
         for item in lst_lib_keys:
             if lib_key == item[0]:
-                print("FOUND IT")
+                print("FOUND LIB KEY")
     # TODO: appropriate return
                 return True
         return False

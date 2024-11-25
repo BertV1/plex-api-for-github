@@ -16,7 +16,8 @@ plex_token = [["X-Plex-Token",plex_token]]
 STATIC_FILES = {
     'SERVER_SETTINGS':'plex_server_settings.xml',
     'LIBRARIES':'plex_library_list.xml',
-    'LIB_CONTENT':'plex_lib_content.xml'
+    'LIB_CONTENT':'plex_lib_content.xml',
+    'COLLECTIONS':'plex_collections.xml'
     }
 # base URL, usually does not change.
 
@@ -57,7 +58,13 @@ def get_library_content(str_base_url,lst_token,lib_key):
             help.write_xml(req_resp.content,STATIC_FILES['LIB_CONTENT'])
 
 def get_collections(str_base_url,lst_token,lib_key):
-    print("nooo it, you are collecting")
+    print("yes, you are collecting")
+    # https://192.168.0.33:32400/library/sections/1/all?collection=187848&X-Plex-Token=z1cScMh945FsQFzkLubs
+    str_base_url += "library/sections/"+lib_key+"/collection"
+    req_url = help.add_args(str_base_url,lst_token)
+    print(req_url)
+    req_resp = requests.get(req_url,verify=False)
+    help.write_xml(req_resp.content,STATIC_FILES['COLLECTIONS'])
     
 
 
@@ -89,7 +96,7 @@ if __name__ == "__main__":
             print("IN GETTING A FILM BY NAME FUNC")
         if sys.argv[1] == '-c' and help.lib_key_exists(sys.argv[2]):
             print("IN GETTING ALL (STATIC) COLLECTIONS BY LIB KEY")
-            # help.get_collections(base_url,plex_token,sys.argv[2])
+            get_collections(base_url,plex_token,sys.argv[2])
     else:
         help.show_help()
             
