@@ -7,7 +7,7 @@ STATIC_FILES = {
     'SERVER_SETTINGS':'plex_server_settings.xml',
     'LIBRARIES':'plex_library_list.xml',
     'LIB_CONTENT':'plex_lib_content.xml'
-    }
+}
     
 def get_epochtime():
     return int(time.time())
@@ -88,6 +88,7 @@ def write_xml(content_blob,filename):
 # retruns tuple list of lib name and key
 # expects xml file with libs
 def getLibsFromXmL(f_plex_libs):
+    f_plex_libs = get_write_dir()+"\\"+f_plex_libs
     plex_libs = ET.parse(f_plex_libs)
     xml_root = plex_libs.getroot()    
     # key, title 
@@ -107,10 +108,16 @@ def check_xml_existence(f_name):
 
 def lib_key_exists(lib_key):
     # TODO: check if lib xml exists
+    if check_xml_existence(STATIC_FILES['LIBRARIES']):
     # TODO: get lib_keys from said file
+        lst_lib_keys = getLibsFromXmL(STATIC_FILES['LIBRARIES'])
     # TODO: check if lib_key in lib_keys
-    # TODO: appropriate return.
-    return True
+        for item in lst_lib_keys:
+            if lib_key == item[0]:
+                print("FOUND IT")
+    # TODO: appropriate return
+                return True
+        return False
     
 
 

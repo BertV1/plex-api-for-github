@@ -28,7 +28,7 @@ def get_server_settings(str_base_url,lst_token):
     help.write_xml(req_resp.content,STATIC_FILES['SERVER_SETTINGS'])
     exit(0)
 
-# TODO: write functionality simpler in main, delegate innerworkings to helper 
+# TODO: write-functionality simpler in main, delegate innerworkings to helper  
 def get_libraries(str_base_url,lst_token):
     bool_lib_file_exists = help.check_xml_existence(STATIC_FILES['LIBRARIES'])
     if not bool_lib_file_exists:
