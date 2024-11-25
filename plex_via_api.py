@@ -1,14 +1,14 @@
 import requests
 import ssl
 import helper_funcs as help
-import help_creds as creds
+import helper_creds as creds
 import os
 import sys
 
 ssl.SSLContext.verify_mode == ssl.VerifyMode.CERT_OPTIONAL
 
 plex_token=creds.get_plex_token()
-plex_url=[get_plex_url()[0],get_plex_url()[1],32400]
+plex_url=[creds.get_plex_url()[0],creds.get_plex_url()[1],32400]
 plex_token = [["X-Plex-Token",plex_token]]
 
 STATIC_FILES = {
@@ -68,8 +68,11 @@ if __name__ == "__main__":
             if sys.argv[1] == '-l':
                 get_libraries(base_url,plex_token)
                 exit(0)
-    if len(sys.argv) == 3 and sys.argv[1] == '-l' and sys.argv[2].isdigit():
-        get_library_content(base_url,plex_token,sys.argv[2])
+    if len(sys.argv) == 3:
+        if sys.argv[1] == '-l' and sys.argv[2].isdigit():
+            get_library_content(base_url,plex_token,sys.argv[2])
+        if sys.argv[1] == '-m':
+            print("OK")
     else:
         help.show_help()
             
