@@ -76,6 +76,7 @@ def write_xml(content_blob,filename):
 ####################
 
 # retruns tuple list of lib name and key
+# expects xml file with libs
 def getLibsFromXmL(f_plex_libs):
     plex_libs = ET.parse(f_plex_libs)
     xml_root = plex_libs.getroot()    
@@ -93,6 +94,13 @@ def check_xml_existence(f_name):
         return True
     else:
         False
+
+def lib_key_exists(lib_key):
+    # TODO: check if lib xml exists
+    # TODO: get lib_keys from said file
+    # TODO: check if lib_key in lib_keys
+    # TODO: appropriate return.
+    
 
 
 ##########################
@@ -112,7 +120,8 @@ def show_help():
     \n -s\t get server settings, stored in xml file
     \n -l\t get libraries, stored in xml file, and show them.
     \n -l key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
-    \n -m "<name>" get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
+    \n -m "<name>"\t get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
+    \n -c\t get collections, stored in xml file, and show them.
     \n XML files are stored in user home.
     """
     print(help_string)

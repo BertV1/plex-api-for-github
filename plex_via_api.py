@@ -37,8 +37,9 @@ def get_libraries(str_base_url,lst_token):
         help.write_xml(req_resp.content,STATIC_FILES['LIBRARIES'])
     help.show_libraries(STATIC_FILES['LIBRARIES'])
 
+
+# TODO: check if this 
 def get_library_content(str_base_url,lst_token,lib_key):
-    # TODO: implement
     if not help.check_xml_existence(STATIC_FILES['LIBRARIES']):
         exit(0)
     fpath = help.get_write_dir() + "\\" + STATIC_FILES['LIBRARIES']
@@ -51,8 +52,16 @@ def get_library_content(str_base_url,lst_token,lib_key):
             print(req_url)
             req_resp = requests.get(req_url,verify=False)
             help.write_xml(req_resp.content,STATIC_FILES['LIB_CONTENT'])
+
+def get_film(str_base_url,lst_token):
+    
+    
+    
+    
+    return -1
+    
             
-STATIC_ARGS = ['-h','-s','-l']
+STATIC_ARGS = ['-c','-h','-s','-l','-m']
 if __name__ == "__main__":
     # sth akin to init_conn
     base_url = help.create_url(plex_url[1],plex_url[0],plex_url[2])
@@ -61,18 +70,23 @@ if __name__ == "__main__":
         help.show_help()
     if len(sys.argv) == 2:
         if sys.argv[1] in STATIC_ARGS:
-            if sys.argv[1] == '-h':
+            if sys.argv[1] == '-h' or sys.argv[1] == '-m':
                 help.show_help()
             if sys.argv[1] == '-s':
                 get_server_settings(base_url,plex_token)
             if sys.argv[1] == '-l':
                 get_libraries(base_url,plex_token)
                 exit(0)
+            if sys.argv[1] == '-c':
+                get_collectio
     if len(sys.argv) == 3:
         if sys.argv[1] == '-l' and sys.argv[2].isdigit():
-            get_library_content(base_url,plex_token,sys.argv[2])
+            help.get_library_content(base_url,plex_token,sys.argv[2])
         if sys.argv[1] == '-m':
-            print("OK")
+            print("IN GETTING A FILM BY NAME FUNC")
+        if sys.argv[1] == '-c' and lib_key_exists(sys.argv[2]):
+            print("IN GETTING ALL (STATIC) COLLECTION BY LIB KEY")
+            # help.get_collections(base_url,plex_token,sys.argv[2])
     else:
         help.show_help()
             
