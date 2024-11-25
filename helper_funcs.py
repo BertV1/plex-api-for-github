@@ -1,6 +1,16 @@
 import urllib.parse
 import os
+import time
 import xml.etree.ElementTree as ET
+
+STATIC_FILES = {
+    'SERVER_SETTINGS':'plex_server_settings.xml',
+    'LIBRARIES':'plex_library_list.xml',
+    'LIB_CONTENT':'plex_lib_content.xml'
+    }
+    
+def get_epochtime():
+    return int(time.time())
 
 
 #################
@@ -100,6 +110,7 @@ def lib_key_exists(lib_key):
     # TODO: get lib_keys from said file
     # TODO: check if lib_key in lib_keys
     # TODO: appropriate return.
+    return True
     
 
 
@@ -121,7 +132,7 @@ def show_help():
     \n -l\t get libraries, stored in xml file, and show them.
     \n -l key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
     \n -m "<name>"\t get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
-    \n -c\t get collections, stored in xml file, and show them.
+    \n -c\ key\t get collections, stored in xml file, and show them. Key: see -l.
     \n XML files are stored in user home.
     """
     print(help_string)
