@@ -31,20 +31,7 @@ def get_server_settings_new(str_base_url,lst_token):
     req_resp = help.make_request(req_url)
     help.write_xml(req_resp,STATIC_FILES['SERVER_SETTINGS'])
     exit(0)
-    
-
-# TODO: write-functionality simpler in main, delegate innerworkings to helper  
-def get_libraries(str_base_url,lst_token):
-    bool_lib_file_exists = help.check_xml_existence(STATIC_FILES['LIBRARIES'])
-    if not bool_lib_file_exists:
-        str_base_url += "library/sections"
-        print(str_base_url)
-        req_url = help.add_args(str_base_url,lst_token)
-        print(req_url)
-        req_resp = requests.get(req_url, verify=False)
-        help.write_xml(req_resp.content,STATIC_FILES['LIBRARIES'])
-    help.show_libraries(STATIC_FILES['LIBRARIES'])
-    
+       
 def get_libraries_new(str_base_url,lst_token):
     
     if help.check_xml_existence(STATIC_FILES['LIBRARIES']):
@@ -60,19 +47,24 @@ def get_libraries_new(str_base_url,lst_token):
 
 
 # TODO: dynamic filename based on libkey
-def get_library_content(str_base_url,lst_token,lib_key):
-    if not help.check_xml_existence(STATIC_FILES['LIBRARIES']):
+def get_library_content_new(str_base_url,lst_token,lib_key):
+    if help.check_xml_existence(STATIC_FILES['LIB_CONTENT']):
+        print("file already exists.")
         exit(0)
-    fpath = help.get_write_dir() + "\\" + STATIC_FILES['LIBRARIES']
-    lst_libs = help.getLibsFromXmL(STATIC_FILES['LIBRARIES'])
-    for tup in lst_libs:
-        if str(lib_key) == tup[0]:
-            print("OK")
-            str_base_url += "library/sections/"+lib_key+"/all"
-            req_url = help.add_args(str_base_url,lst_token)
-            print(req_url)
-            req_resp = requests.get(req_url,verify=False)
-            help.write_xml(req_resp.content,STATIC_FILES['LIB_CONTENT'])
+    lst_lib_keys = list(zip(*help.getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
+    if lib_key not in lst_lib_keys:
+        print("key does not exist in {}.".format(lst_lib_keys))
+        exit(0)
+    
+    url_elems = [["library","sections",lib_key,"all"],lst_token]
+    req_url = str_base_url + help.build_request_url_elems(url_elems)
+    req_resp = help.make_request(req_url)
+    
+    help.write_xml(req_resp,STATIC_FILES['LIB_CONTENT'])
+    
+
+
+
 
 def get_collections(str_base_url,lst_token,lib_key):
     str_base_url += "library/sections/"+lib_key+"/collection"
@@ -111,7 +103,7 @@ if __name__ == "__main__":
                 exit(0)
     if len(sys.argv) == 3:
         if sys.argv[1] == '-l' and sys.argv[2].isdigit():
-            get_library_content(base_url,plex_token,sys.argv[2])
+            get_library_content_new(base_url,plex_token,sys.argv[2])
         if sys.argv[1] == '-m':
             print("IN GETTING A FILM BY NAME FUNC")
         if sys.argv[1] == '-c' and help.lib_key_exists(sys.argv[2]):
