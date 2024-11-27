@@ -141,6 +141,9 @@ def getCollectionsFromXmL(f_plex_colls):
     xml_root = plex_colls.getroot()
     # key, title 
     lst_res = []
+    for item in xml_root.findall('./Directory'):
+        lst_res.append((item.attrib['ratingKey'],item.attrib['title']))
+    return lst_res
     
 
 def check_xml_existence(f_name):
@@ -183,10 +186,14 @@ def show_help():
     print(help_string)
     exit(0)
 
+def prepTups(lst_tups):
+    tup_for_tup = ['Key: %s --> Name: %s\n' % tup for tup in lst_tups]
+    str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
+    return str_tup_for_tup
+
 def show_libraries(fname):
     lst_libs = getLibsFromXmL(fname)
-    tup_for_tup = ['Key: %s --> Name: %s\n' % tup for tup in lst_libs]
-    str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
+    str_tup_for_tup = prepTups(lst_libs) 
     print(
     """
     AVAILABLE LIBRARIES:\n\n {}
@@ -194,7 +201,12 @@ def show_libraries(fname):
     )
 
 def show_collections(fname):
-    
-    return -1
+    lst_collections = getCollectionsFromXmL(fname)
+    str_tup_for_tup = prepTups(lst_collections)
+    print(
+    """
+    AVAILABLE COLLECTIONS:\n\n {}
+    """.format(str_tup_for_tup)
+    )
 
 
