@@ -1,5 +1,6 @@
 import urllib.parse
 import os
+import requests
 import time
 import xml.etree.ElementTree as ET
 
@@ -42,7 +43,7 @@ def create_url(str_host,str_http_type,int_port):
     str_url = str_http_type+"://"+str_host+":"+str(int_port)+"/"
     return str_url
     
-
+# TODO: str_url shouldn't be here
 def add_args(str_url,tuples_args):
     url_arg=""
     for arg in tuples_args:
@@ -52,6 +53,85 @@ def add_args(str_url,tuples_args):
             url_arg+="&"+arg[0]+"="+url_encode(arg[1])
     str_url+= url_arg
     return str_url
+
+
+
+######################
+######################
+##                  ##
+## \        / +- |> ##
+##  \  /\  /  +- |\ ##
+##   \/  \/   +- |/ ##
+##                  ##
+######################
+######################
+
+# generic function which ideally should work for every request we need to make_requests
+# should be able to handle the following requests:
+# - server_settings:        https://192.168.0.33:32400/?X-Plex-Token=XXX
+# - get_libraries:          https://192.168.0.33:32400/library/sections?X-Plex-Token=XXX
+# - get_library_content:    https://192.168.0.33:32400/library/sections/1/all?X-Plex-Token=XXX
+# - get_collections:        https://192.168.0.33:32400/library/sections/1/collection?X-Plex-Token=XXX
+# - get_collection_content: https://192.168.0.33:32400/library/sections/1/all?collection=3441&X-Plex-Token=XXX
+#       make_requests
+#               (
+#                   "https://192.168.0.33:32400",
+#                   [
+#                       "library/sections",
+#                       "1",
+#                       "all"
+#                   ],
+#                   [
+#                       ["collection",3441],
+#                       ["X-Plex-Token","XXX"]
+#                   ]
+#               )
+# - 
+# - 
+
+
+def bool_end_fwdSlash(str_url):
+    return str_url[-1:] == '/'
+
+def create_url_args(lst_url_args):
+    url_args=""
+    for arg in lst_url_args:
+        if len(url_args) == 0:
+            url_args+="?"+arg[0]+"="+url_encode(arg[1])
+        else:
+            url_args+="&"+arg[0]+"="+url_encode(arg[1])
+    return url_args
+
+
+
+def create_base_url_parts(lst_base_url_parts):
+    if not lst_base_url_parts:
+        return ""
+        
+    
+    return -1
+
+
+# !!!!!!!!!!!!!!!!!!!!!! BASE URL ALWAYS ENDS WITH A FWD SLASH !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!! FIRST LIST ELEM IS ALWAYS PARTS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!!!!!!!!!!!!!!!!!!!! SECOND LIST ELEM IS ALWAYS ARGS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+def build_request_url_elems(lst_args):
+    # lst_base_url_parts, lst_url_args
+    str_url_parts = create_base_url_parts(lst_args[0])
+    str_url_args = create_url_args(lst_args[1])
+    
+    url = str_url_parts + str_url_args
+    return url
+    
+def make_request(str_req_url):
+    print(str_req_url)
+    req_resp = requests.get(str_req_url, verify=False)
+    return req_resp.content
+
+
+
+
+
 
 ############################
 ############################
@@ -137,9 +217,10 @@ def show_help():
     \n -h\t get this help menu. If no args are supplied, also shows this help menu.
     \n -s\t get server settings, stored in xml file
     \n -l\t get libraries, stored in xml file, and show them.
-    \n -l key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
+    \n -l lib_key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
     \n -m "<name>"\t get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
-    \n -c\ key\t get collections, stored in xml file, and show them. Key: see -l.
+    \n -c lib_key\t get all collections of a library, stored in xml file, and show them. Key: see -l.
+    \n -c lib_key "<name>" get content of a collection identified by <name> (in quotations), located in library identified by lib_key.
     \n XML files are stored in user home.
     """
     print(help_string)
@@ -147,7 +228,7 @@ def show_help():
 
 def show_libraries(fname):
     fpath = get_write_dir() + "\\" + fname
-    lst_libs = getLibsFromXmL(fpath)
+    lst_libs = getLibsFromXmL(fname)
     tup_for_tup = ['Key: %s --> Name: %s\n' % tup for tup in lst_libs]
     str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
     print(
