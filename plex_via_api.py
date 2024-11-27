@@ -21,16 +21,12 @@ STATIC_FILES = {
     }
 # base URL, usually does not change.
 
-def get_server_settings(str_base_url,lst_token):
-    print(str_base_url)
-    req_url = help.add_args(str_base_url,lst_token)
-    print(req_url)
-    req_resp = requests.get(req_url, verify=False)
-    help.write_xml(req_resp.content,STATIC_FILES['SERVER_SETTINGS'])
-    exit(0)
-
 def get_server_settings_new(str_base_url,lst_token):
+    
+    if help.check_xml_existence(STATIC_FILES['SERVER_SETTINGS']):
+        exit(0)
     url_elems = ['',lst_token]
+    
     req_url = str_base_url + help.build_request_url_elems(url_elems)
     req_resp = help.make_request(req_url)
     help.write_xml(req_resp,STATIC_FILES['SERVER_SETTINGS'])
@@ -47,6 +43,19 @@ def get_libraries(str_base_url,lst_token):
         print(req_url)
         req_resp = requests.get(req_url, verify=False)
         help.write_xml(req_resp.content,STATIC_FILES['LIBRARIES'])
+    help.show_libraries(STATIC_FILES['LIBRARIES'])
+    
+def get_libraries_new(str_base_url,lst_token):
+    
+    if help.check_xml_existence(STATIC_FILES['LIBRARIES']):
+        help.show_libraries(STATIC_FILES['LIBRARIES'])
+        exit(0)
+    
+    url_elems = [["library","sections"],lst_token]
+    req_url = str_base_url + help.build_request_url_elems(url_elems)
+    req_resp = help.make_request(req_url)
+    
+    help.write_xml(req_resp,STATIC_FILES['LIBRARIES'])
     help.show_libraries(STATIC_FILES['LIBRARIES'])
 
 
@@ -98,7 +107,7 @@ if __name__ == "__main__":
             if sys.argv[1] == '-s':
                 get_server_settings_new(base_url,plex_token)
             if sys.argv[1] == '-l':
-                get_libraries(base_url,plex_token)
+                get_libraries_new(base_url,plex_token)
                 exit(0)
     if len(sys.argv) == 3:
         if sys.argv[1] == '-l' and sys.argv[2].isdigit():

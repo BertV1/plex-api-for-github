@@ -94,6 +94,9 @@ def bool_end_fwdSlash(str_url):
     return str_url[-1:] == '/'
 
 def create_url_args(lst_url_args):
+    if not lst_url_args:
+        return ""
+    
     url_args=""
     for arg in lst_url_args:
         if len(url_args) == 0:
@@ -107,9 +110,14 @@ def create_url_args(lst_url_args):
 def create_base_url_parts(lst_base_url_parts):
     if not lst_base_url_parts:
         return ""
-        
     
-    return -1
+    url_parts = ""
+    for url_part in lst_base_url_parts:
+        if len(url_parts) == 0:
+            url_parts += url_part
+        else:
+            url_parts += "/" + url_part
+    return url_parts
 
 
 # !!!!!!!!!!!!!!!!!!!!!! BASE URL ALWAYS ENDS WITH A FWD SLASH !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -227,7 +235,6 @@ def show_help():
     exit(0)
 
 def show_libraries(fname):
-    fpath = get_write_dir() + "\\" + fname
     lst_libs = getLibsFromXmL(fname)
     tup_for_tup = ['Key: %s --> Name: %s\n' % tup for tup in lst_libs]
     str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
