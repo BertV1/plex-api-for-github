@@ -24,10 +24,6 @@ def get_epochtime():
 #################
 #################
 
-def write_xml(content_blob,filename):
-    with open(filename+'.xml', 'wb') as f:
-        f.write(content_blob)
-
 def url_encode(str_elem):
     return urllib.parse.quote(str_elem)
 
@@ -42,52 +38,6 @@ def create_url(str_host,str_http_type,int_port):
         print("The port should be a number.")
     str_url = str_http_type+"://"+str_host+":"+str(int_port)+"/"
     return str_url
-    
-# TODO: str_url shouldn't be here
-def add_args(str_url,tuples_args):
-    url_arg=""
-    for arg in tuples_args:
-        if len(url_arg) == 0:
-            url_arg+="?"+arg[0]+"="+url_encode(arg[1])
-        else:
-            url_arg+="&"+arg[0]+"="+url_encode(arg[1])
-    str_url+= url_arg
-    return str_url
-
-
-
-######################
-######################
-##                  ##
-## \        / +- |> ##
-##  \  /\  /  +- |\ ##
-##   \/  \/   +- |/ ##
-##                  ##
-######################
-######################
-
-# generic function which ideally should work for every request we need to make_requests
-# should be able to handle the following requests:
-# - server_settings:        https://192.168.0.33:32400/?X-Plex-Token=XXX
-# - get_libraries:          https://192.168.0.33:32400/library/sections?X-Plex-Token=XXX
-# - get_library_content:    https://192.168.0.33:32400/library/sections/1/all?X-Plex-Token=XXX
-# - get_collections:        https://192.168.0.33:32400/library/sections/1/collection?X-Plex-Token=XXX
-# - get_collection_content: https://192.168.0.33:32400/library/sections/1/all?collection=3441&X-Plex-Token=XXX
-#       make_requests
-#               (
-#                   "https://192.168.0.33:32400",
-#                   [
-#                       "library/sections",
-#                       "1",
-#                       "all"
-#                   ],
-#                   [
-#                       ["collection",3441],
-#                       ["X-Plex-Token","XXX"]
-#                   ]
-#               )
-# - 
-# - 
 
 def create_url_args(lst_url_args):
     if not lst_url_args:
@@ -100,8 +50,6 @@ def create_url_args(lst_url_args):
         else:
             url_args+="&"+arg[0]+"="+url_encode(arg[1])
     return url_args
-
-
 
 def create_base_url_parts(lst_base_url_parts):
     if not lst_base_url_parts:
@@ -127,15 +75,21 @@ def build_request_url_elems(lst_args):
     url = str_url_parts + str_url_args
     return url
     
+
+######################
+######################
+##                  ##
+## \        / +- |> ##
+##  \  /\  /  +- |\ ##
+##   \/  \/   +- |/ ##
+##                  ##
+######################
+######################
+    
 def make_request(str_req_url):
     print(str_req_url)
     req_resp = requests.get(str_req_url, verify=False)
     return req_resp.content
-
-
-
-
-
 
 ############################
 ############################
@@ -180,6 +134,14 @@ def getLibsFromXmL(f_plex_libs):
     for item in xml_root.findall('./Directory'):
         lst_res.append((item.attrib['key'], item.attrib['title']))
     return lst_res
+
+def getCollectionsFromXmL(f_plex_colls):
+    f_plex_colls = get_write_dir()+"\\"+f_plex_colls
+    plex_colls = ET.parse(f_plex_colls)
+    xml_root = plex_colls.getroot()
+    # key, title 
+    lst_res = []
+    
 
 def check_xml_existence(f_name):
     # TODO: chg path to root of user
@@ -230,5 +192,9 @@ def show_libraries(fname):
     AVAILABLE LIBRARIES:\n\n {}
     """.format(str_tup_for_tup)
     )
+
+def show_collections(fname):
+    
+    return -1
 
 
