@@ -89,10 +89,6 @@ def add_args(str_url,tuples_args):
 # - 
 # - 
 
-
-def bool_end_fwdSlash(str_url):
-    return str_url[-1:] == '/'
-
 def create_url_args(lst_url_args):
     if not lst_url_args:
         return ""
@@ -195,17 +191,8 @@ def check_xml_existence(f_name):
         False
 
 def lib_key_exists(lib_key):
-    # TODO: check if lib xml exists
     if check_xml_existence(STATIC_FILES['LIBRARIES']):
-    # TODO: get lib_keys from said file
-        lst_lib_keys = getLibsFromXmL(STATIC_FILES['LIBRARIES'])
-    # TODO: check if lib_key in lib_keys
-        for item in lst_lib_keys:
-            if lib_key == item[0]:
-                print("FOUND LIB KEY")
-    # TODO: appropriate return
-                return True
-        return False
+        return lib_key in list(zip(*getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
     
 
 

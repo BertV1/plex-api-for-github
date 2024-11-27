@@ -24,6 +24,7 @@ STATIC_FILES = {
 def get_server_settings_new(str_base_url,lst_token):
     
     if help.check_xml_existence(STATIC_FILES['SERVER_SETTINGS']):
+        print("file already exists")
         exit(0)
     url_elems = ['',lst_token]
     
@@ -31,7 +32,8 @@ def get_server_settings_new(str_base_url,lst_token):
     req_resp = help.make_request(req_url)
     help.write_xml(req_resp,STATIC_FILES['SERVER_SETTINGS'])
     exit(0)
-       
+    
+    
 def get_libraries_new(str_base_url,lst_token):
     
     if help.check_xml_existence(STATIC_FILES['LIBRARIES']):
@@ -52,9 +54,6 @@ def get_library_content_new(str_base_url,lst_token,lib_key):
         print("file already exists.")
         exit(0)
     lst_lib_keys = list(zip(*help.getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
-    if lib_key not in lst_lib_keys:
-        print("key does not exist in {}.".format(lst_lib_keys))
-        exit(0)
     
     url_elems = [["library","sections",lib_key,"all"],lst_token]
     req_url = str_base_url + help.build_request_url_elems(url_elems)
@@ -62,16 +61,19 @@ def get_library_content_new(str_base_url,lst_token,lib_key):
     
     help.write_xml(req_resp,STATIC_FILES['LIB_CONTENT'])
     
-
-
-
-
-def get_collections(str_base_url,lst_token,lib_key):
-    str_base_url += "library/sections/"+lib_key+"/collection"
-    req_url = help.add_args(str_base_url,lst_token)
-    print(req_url)
-    req_resp = requests.get(req_url,verify=False)
-    help.write_xml(req_resp.content,STATIC_FILES['COLLECTIONS'])
+    
+def get_collections_new(str_base_url,lst_token,lib_key):
+    
+    if help.check_xml_existence(STATIC_FILES['COLLECTIONS']):
+        print("file already exists")
+        exit(0)
+    lst_lib_keys = list(zip(*help.getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
+    
+    url_elems = [["library","sections",lib_key,"collections"],lst_token]
+    req_url = str_base_url + help.build_request_url_elems(url_elems)
+    req_resp = help.make_request(req_url)
+    
+    help.write_xml(req_resp,STATIC_FILES['COLLECTIONS'])
 
 def get_collection_content(str_base_url,lst_token,lib_key,str_collection_name):
     print("yes, you are COLLECTING THE COLLECTION for {}.".format(str_collection_name))
@@ -89,28 +91,29 @@ STATIC_ARGS = ['-c','-h','-s','-l','-m']
 if __name__ == "__main__":
     # sth akin to init_conn
     base_url = help.create_url(plex_url[1],plex_url[0],plex_url[2])
+    lst_args = sys.argv
+    arg_count = len(sys.argv)
 
-    if len(sys.argv) == 1:
+    if len(lst_args) == 1:
         help.show_help()
-    if len(sys.argv) == 2:
-        if sys.argv[1] in STATIC_ARGS:
-            if sys.argv[1] == '-h' or sys.argv[1] == '-m':
+    if arg_count == 2:
+        if lst_args[1] in STATIC_ARGS:
+            if lst_args[1] == '-h' or lst_args[1] == '-m':
                 help.show_help()
-            if sys.argv[1] == '-s':
+            if lst_args[1] == '-s':
                 get_server_settings_new(base_url,plex_token)
-            if sys.argv[1] == '-l':
+            if lst_args[1] == '-l':
                 get_libraries_new(base_url,plex_token)
                 exit(0)
-    if len(sys.argv) == 3:
-        if sys.argv[1] == '-l' and sys.argv[2].isdigit():
-            get_library_content_new(base_url,plex_token,sys.argv[2])
-        if sys.argv[1] == '-m':
+    if arg_count == 3:
+        if lst_args[1] == '-l' and help.lib_key_exists(lst_args[2]):
+            get_library_content_new(base_url,plex_token,lst_args[2])
+        if lst_args[1] == '-m':
             print("IN GETTING A FILM BY NAME FUNC")
-        if sys.argv[1] == '-c' and help.lib_key_exists(sys.argv[2]):
-            get_collections(base_url,plex_token,sys.argv[2])
-    if len(sys.argv) == 4 and help.lib_key_exists(sys.argv[2]):
-        print("IN GETTING CONTENT OF (STATIC) COLLECTION")
-        get_collection_content(base_url,plex_token,sys.argv[2],sys.argv[3])
+        if lst_args[1] == '-c' and help.lib_key_exists(lst_args[2]):
+            get_collections_new(base_url,plex_token,lst_args[2])
+    if arg_count == 4 and lst_args[1] == '-c' and help.lib_key_exists(lst_args[2]):
+        get_collection_content(base_url,plex_token,lst_args[2],lst_args[3])
         
         
         
