@@ -64,7 +64,7 @@ def get_library_content_new(str_base_url,lst_token,lib_key):
 def get_collections_new(str_base_url,lst_token,lib_key):
     
     if help.check_xml_existence(STATIC_FILES['COLLECTIONS']):
-        print("file already exists")
+        help.show_collections(STATIC_FILES['COLLECTIONS'])
         exit(0)
     
     url_elems = [["library","sections",lib_key,"collections"],lst_token]
@@ -112,7 +112,10 @@ if __name__ == "__main__":
             print("IN GETTING A FILM BY NAME FUNC")
         if lst_args[1] == '-c' and help.lib_key_exists(lst_args[2]):
             get_collections_new(base_url,plex_token,lst_args[2])
-    if arg_count == 4 and lst_args[1] == '-c' and help.lib_key_exists(lst_args[2]):
+    if arg_count == 4 and \
+       lst_args[1] == '-c' and \
+       help.lib_key_exists(lst_args[2]) and \
+       help.coll_key_exists(lst_args[3]):
         get_collection_content(base_url,plex_token,lst_args[2],lst_args[3])
     else:
         help.show_help()

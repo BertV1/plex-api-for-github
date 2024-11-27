@@ -7,7 +7,8 @@ import xml.etree.ElementTree as ET
 STATIC_FILES = {
     'SERVER_SETTINGS':'plex_server_settings.xml',
     'LIBRARIES':'plex_library_list.xml',
-    'LIB_CONTENT':'plex_lib_content.xml'
+    'LIB_CONTENT':'plex_lib_content.xml',
+    'COLLECTIONS':'plex_collections.xml'
 }
     
 def get_epochtime():
@@ -158,6 +159,10 @@ def check_xml_existence(f_name):
 def lib_key_exists(lib_key):
     if check_xml_existence(STATIC_FILES['LIBRARIES']):
         return lib_key in list(zip(*getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
+
+def coll_key_exists(coll_key):
+    if check_xml_existence(STATIC_FILES['COLLECTIONS']):
+        return coll_key in list(zip(*getCollectionsFromXmL(STATIC_FILES['COLLECTIONS'])))[0]
     
 
 
@@ -174,13 +179,13 @@ def lib_key_exists(lib_key):
 def show_help():
     help_string ="""
     PLEX SCRIPTOR: python script.py [args]\n
-    \n -h\t get this help menu. If no args are supplied, also shows this help menu.
-    \n -s\t get server settings, stored in xml file
-    \n -l\t get libraries, stored in xml file, and show them.
+    \n -h\t\t get this help menu. If no args are supplied, also shows this help menu.
+    \n -s\t\t get server settings, stored in xml file
+    \n -l\t\t get libraries, stored in xml file, and show them.
     \n -l lib_key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
     \n -m "<name>"\t get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
     \n -c lib_key\t get all collections of a library, stored in xml file, and show them. Key: see -l.
-    \n -c lib_key "<name>" get content of a collection identified by <name> (in quotations), located in library identified by lib_key.
+    \n -c lib_key coll_key get content of a collection identified by coll_key, located in library identified by lib_key.
     \n XML files are stored in user home.
     """
     print(help_string)
