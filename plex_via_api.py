@@ -9,7 +9,7 @@ ssl.SSLContext.verify_mode == ssl.VerifyMode.CERT_OPTIONAL
 
 plex_token_instance=creds.get_plex_token()
 plex_url=[creds.get_plex_url()[0],creds.get_plex_url()[1],32400]
-plex_token = [["X-Plex-Token",plex_token_instance   ]]
+plex_token = [["X-Plex-Token",plex_token_instance]]
 
 # TODO: rewrite this so that we can create dynamic filenames,
 # eg: 'libraries':['plex_lib_list','.xml']
@@ -53,7 +53,6 @@ def get_library_content_new(str_base_url,lst_token,lib_key):
     if help.check_xml_existence(STATIC_FILES['LIB_CONTENT']):
         print("file already exists.")
         exit(0)
-    lst_lib_keys = list(zip(*help.getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
     
     url_elems = [["library","sections",lib_key,"all"],lst_token]
     req_url = str_base_url + help.build_request_url_elems(url_elems)
@@ -67,13 +66,13 @@ def get_collections_new(str_base_url,lst_token,lib_key):
     if help.check_xml_existence(STATIC_FILES['COLLECTIONS']):
         print("file already exists")
         exit(0)
-    lst_lib_keys = list(zip(*help.getLibsFromXmL(STATIC_FILES['LIBRARIES'])))[0]
     
     url_elems = [["library","sections",lib_key,"collections"],lst_token]
     req_url = str_base_url + help.build_request_url_elems(url_elems)
     req_resp = help.make_request(req_url)
     
     help.write_xml(req_resp,STATIC_FILES['COLLECTIONS'])
+    help.show_collections(STATIC_FILES['COLLECTIONS'])
 
 def get_collection_content(str_base_url,lst_token,lib_key,str_collection_name):
     print("yes, you are COLLECTING THE COLLECTION for {}.".format(str_collection_name))
@@ -91,10 +90,11 @@ STATIC_ARGS = ['-c','-h','-s','-l','-m']
 if __name__ == "__main__":
     # sth akin to init_conn
     base_url = help.create_url(plex_url[1],plex_url[0],plex_url[2])
+    
     lst_args = sys.argv
     arg_count = len(sys.argv)
 
-    if len(lst_args) == 1:
+    if arg_count == 1:
         help.show_help()
     if arg_count == 2:
         if lst_args[1] in STATIC_ARGS:
@@ -114,9 +114,6 @@ if __name__ == "__main__":
             get_collections_new(base_url,plex_token,lst_args[2])
     if arg_count == 4 and lst_args[1] == '-c' and help.lib_key_exists(lst_args[2]):
         get_collection_content(base_url,plex_token,lst_args[2],lst_args[3])
-        
-        
-        
     else:
         help.show_help()
             
