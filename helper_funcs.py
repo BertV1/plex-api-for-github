@@ -8,7 +8,8 @@ STATIC_FILES = {
     'SERVER_SETTINGS':'plex_server_settings.xml',
     'LIBRARIES':'plex_library_list.xml',
     'LIB_CONTENT':'plex_lib_content.xml',
-    'COLLECTIONS':'plex_collections.xml'
+    'COLLECTIONS':'plex_collections.xml',
+    'COLLECTION':'plex_coll_content.xml'
 }
     
 def get_epochtime():
@@ -126,6 +127,7 @@ def write_xml(content_blob,filename):
 
 # retruns tuple list of lib name and key
 # expects xml file with libs
+# TODO: maybe merge colls/lib key funcs
 def getLibsFromXmL(f_plex_libs):
     f_plex_libs = get_write_dir()+"\\"+f_plex_libs
     plex_libs = ET.parse(f_plex_libs)
@@ -144,6 +146,22 @@ def getCollectionsFromXmL(f_plex_colls):
     lst_res = []
     for item in xml_root.findall('./Directory'):
         lst_res.append((item.attrib['ratingKey'],item.attrib['title']))
+    return lst_res
+
+# TODO: account for absence of properties
+def getCollectionContentFromXmL(f_plex_coll_content):
+    f_plex_coll_content = get_write_dir()+"\\"+f_plex_coll_content
+    plex_coll_content = ET.parse(f_plex_coll_content)
+    xml_root = plex_coll_content.getroot()
+    lst_res = []
+    x = 0
+    for item in xml_root.findall('./Video'):
+        try:
+            lst_res.append((item.attrib['ratingKey'],item.attrib['title'],item.attrib['originallyAvailableAt']))
+        except KeyError:
+            print("woops, didn't find some items...")
+            lst_res.append(("kak","kak","kak"))
+            pass
     return lst_res
     
 
@@ -183,7 +201,7 @@ def show_help():
     \n -s\t\t get server settings, stored in xml file
     \n -l\t\t get libraries, stored in xml file, and show them.
     \n -l lib_key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
-    \n -m "<name>"\t get film properties by <name> (must be in quotations), stored in xml file. Returns NO if film is not found. Returns multiple entries if films with same name exist.
+    \n -m film_key\t get film properties by film_key, stored in xml file. Returns NO if film is not found.
     \n -c lib_key\t get all collections of a library, stored in xml file, and show them. Key: see -l.
     \n -c lib_key coll_key get content of a collection identified by coll_key, located in library identified by lib_key.
     \n XML files are stored in user home.
@@ -210,7 +228,17 @@ def show_collections(fname):
     str_tup_for_tup = prepTups(lst_collections)
     print(
     """
-    AVAILABLE COLLECTIONS:\n\n {}
+    COLLECTIONS in this LIBRARY:\n\n {}
+    """.format(str_tup_for_tup)
+    )
+
+def show_collection_content(fname):
+    lst_coll_content = getCollectionContentFromXmL(fname)
+    tup_for_tup = ['Key: %s --> Name: %s ---> Released: %s\n' % tup for tup in lst_coll_content]
+    str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
+    print(
+    """
+    FILMS in this COLLECTION:\n\n {}
     """.format(str_tup_for_tup)
     )
 
