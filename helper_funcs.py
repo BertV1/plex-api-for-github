@@ -31,8 +31,8 @@ def url_encode(str_elem):
 
 def create_url(str_host,str_http_type,int_port):
     if create_url.__code__.co_argcount != 3:
-        exit(0)
         print("This function requires 3 arguments.")
+        exit(0)
     try:
         str(int_port)
     except:
@@ -53,7 +53,7 @@ def create_url_args(lst_url_args):
             url_args+="&"+arg[0]+"="+url_encode(arg[1])
     return url_args
 
-def create_base_url_parts(lst_base_url_parts):
+def create_base_url_parts(lst_base_url_parts,end_slash):
     if not lst_base_url_parts:
         return ""
     
@@ -63,15 +63,17 @@ def create_base_url_parts(lst_base_url_parts):
             url_parts += url_part
         else:
             url_parts += "/" + url_part
+    if end_slash:
+        return url_parts+"/"
     return url_parts
 
 
 # !!!!!!!!!!!!!!!!!!!!!! BASE URL ALWAYS ENDS WITH A FWD SLASH !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!!!!!!!!!!!!!!!!!!!!! FIRST LIST ELEM IS ALWAYS PARTS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!!!!!!!!!!!!!!!!!!!!! SECOND LIST ELEM IS ALWAYS ARGS       !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-def build_request_url_elems(lst_args):
+def build_request_url_elems(lst_args,end_slash=None):
     # lst_base_url_parts, lst_url_args
-    str_url_parts = create_base_url_parts(lst_args[0])
+    str_url_parts = create_base_url_parts(lst_args[0],end_slash)
     str_url_args = create_url_args(lst_args[1])
     
     url = str_url_parts + str_url_args

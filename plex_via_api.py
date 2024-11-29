@@ -100,7 +100,6 @@ def get_film_by_key(str_base_url,lst_token,mov_key):
     
     url_elems=[["library","metadata",mov_key],lst_token]
     req_url = str_base_url + help.build_request_url_elems(url_elems)
-    print(req_url)
     req_resp = help.make_request(req_url)
     
     help.write_xml(req_resp,fname)
@@ -108,19 +107,18 @@ def get_film_by_key(str_base_url,lst_token,mov_key):
 
 def get_films_by_terms(str_base_url,lst_token,str_terms):
     
-    fname = str_terms.replace(' ','-')+STATIC_FILES['FILM_SEARCH']
+    fname = str_terms.replace(' ','-')+"-"+STATIC_FILES['FILM_SEARCH']
     
     if help.check_xml_existence(fname):
         help.show_film_search_content(fname)
         exit(0)
     
     lst_token.append(["query",str_terms])
-    lst_token.append(["limit",100])
-    lst_token.append(["sectionId",1])
+    lst_token.append(["limit","100"])
+    lst_token.append(["sectionId","1"])
     
     url_elems=[["hubs","search"],lst_token]
-    req_url = str_base_url + help.build_request_url_elems(url_elems)
-    print(req_url)
+    req_url = str_base_url + help.build_request_url_elems(url_elems,end_slash=True)
     req_resp = help.make_request(req_url)
     
     help.write_xml(req_resp,fname)
@@ -134,7 +132,6 @@ if __name__ == "__main__":
     
     lst_args = sys.argv
     arg_count = len(sys.argv)
-    print(arg_count)
 
     if arg_count == 1:
         help.show_help()
@@ -160,8 +157,8 @@ if __name__ == "__main__":
                 get_film_by_key(base_url,plex_token,lst_args[3])
                 print("IN GETTING A FILM BY KEY FUNC")
             if lst_args[2] == '-term':
+                get_films_by_terms(base_url,plex_token,lst_args[3])
                 print("GETTING A FILM BY TERM")
-                print(lst_args[3][-1])
     else:
         help.show_help()
             
