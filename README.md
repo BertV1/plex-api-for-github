@@ -6,8 +6,22 @@
 * get (your) server settings
   * xml output
 * get a list of your libraries
-* get full ocntent of your libraries
   * xml output
+  * shown
+* get full content of your libraries
+  * xml output
+* get a list of your collections (by library)
+  * xml output
+  * shown
+* get a list of films in your collections
+  * xml output
+  * shown
+* get a film by key
+  * xml output
+  * shown
+* get film(s) by search term(s)
+  * xml output
+  * shown
 * a functional (?) script
 
 ## TODO
@@ -15,13 +29,15 @@
 ### prio’s:
 
 * merge mass-film-name-editor-given-a-collection into main script
-  * get collections of a library
-  * get collection content by key (after having being shown the collections)
+  * ~~get collections of a library~~
+  * ~~get collection content by key (after having being shown the collections)~~
+  * ~~search by terms~~
+  * update film properties (title)
 * actually use ssl
 
 ### interesting:
 
-* get props (any) of given a film name
+* ==get props (any) of a film given a name (search term)==
 * change props (any, as in, any that are possible to chg) of a given film by name
 
 ### nice to have:
@@ -75,8 +91,8 @@ files are written to user home. Most files should have stdrdized naming conventi
     * different rating key
     * no mention of lib key
 
-* if a acquired media item isn’t *matched*, certain script functions won’t work for now:
-  * get-data-from-xml functions: extract data from xml based on existence of attributes (metadata properties)
-  * show functions: needs the above to work
+* ~~if a acquired media item isn’t *matched*, certain script functions won’t work for now:~~
+  * ~~get-data-from-xml functions: extract data from xml based on existence of attributes (metadata properties)~~
+  * ~~show functions: needs the above to work~~
 * ~~if a media item is removed (from a collection) through the WEB GUI, it isn’t (immediately?) cascaded to the API data.~~ 
 
