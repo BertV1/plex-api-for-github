@@ -160,7 +160,6 @@ def getCollectionContentFromXmL(f_plex_coll_content):
             lst_res.append((item.attrib['ratingKey'],item.attrib['title'],item.attrib['originallyAvailableAt']))
         except KeyError:
             print("woops, didn't find some items...")
-            lst_res.append(("kak","kak","kak"))
             pass
     return lst_res
     
@@ -201,7 +200,8 @@ def show_help():
     \n -s\t\t get server settings, stored in xml file
     \n -l\t\t get libraries, stored in xml file, and show them.
     \n -l lib_key\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
-    \n -m film_key\t get film properties by film_key, stored in xml file. Returns NO if film is not found.
+    \n -m -term "<terms>"\t search for films given your term(s). Terms must be in "". returns matching film data in xml, and shows the film info.
+    \n -m -key film_key\t get film properties by film_key, stored in xml file. Returns NO if film is not found.
     \n -c lib_key\t get all collections of a library, stored in xml file, and show them. Key: see -l.
     \n -c lib_key coll_key get content of a collection identified by coll_key, located in library identified by lib_key.
     \n XML files are stored in user home.

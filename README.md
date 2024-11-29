@@ -43,6 +43,9 @@ For now, it should be able to handle the following requests:
 - get_collections:        https://192.168.0.33:32400/library/sections/1/collection?X-Plex-Token=XXX
 - get_collection_content: https://192.168.0.33:32400/library/sections/1/all?collection=3441&X-Plex-Token=XXX
 - get_collection_content: https://192.168.0.33:32400/library/collections/8469/children?X-Plex-Token=XXX
+- get_a_film:  https://192.168.0.33:32400/library/metadata/123456?X-Plex-Token=XXX
+- ==search_films_by_terms==: https://192.168.0.33:32400/hubs/search/?X-Plex-Token=XXX&query=stringstringstring&limit=100&sectionId=1
+  - has an irregular format!
 
 ```python
     make_requests
