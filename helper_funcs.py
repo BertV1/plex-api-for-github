@@ -130,10 +130,15 @@ def write_xml(content_blob,filename):
 # retruns tuple list of lib name and key
 # expects xml file with libs
 # TODO: maybe merge colls/lib key funcs
+
+def parse_xml_get_root(fname):
+    f_content = get_write_dir()+"\\"+fname
+    plex_content = ET.parse(f_content)
+    xml_root = plex_content.getroot()
+    return xml_root
+
 def getLibsFromXmL(f_plex_libs):
-    f_plex_libs = get_write_dir()+"\\"+f_plex_libs
-    plex_libs = ET.parse(f_plex_libs)
-    xml_root = plex_libs.getroot()    
+    xml_root = parse_xml_get_root(f_plex_libs) 
     # key, title 
     lst_res = []
     for item in xml_root.findall('./Directory'):
@@ -141,9 +146,7 @@ def getLibsFromXmL(f_plex_libs):
     return lst_res
 
 def getCollectionsFromXmL(f_plex_colls):
-    f_plex_colls = get_write_dir()+"\\"+f_plex_colls
-    plex_colls = ET.parse(f_plex_colls)
-    xml_root = plex_colls.getroot()
+    xml_root = parse_xml_get_root(f_plex_colls)
     # key, title 
     lst_res = []
     for item in xml_root.findall('./Directory'):
@@ -152,11 +155,8 @@ def getCollectionsFromXmL(f_plex_colls):
 
 # TODO: account for absence of properties
 def getCollectionContentFromXmL(f_plex_coll_content):
-    f_plex_coll_content = get_write_dir()+"\\"+f_plex_coll_content
-    plex_coll_content = ET.parse(f_plex_coll_content)
-    xml_root = plex_coll_content.getroot()
+    xml_root = parse_xml_get_root(f_plex_coll_content)
     lst_res = []
-    x = 0
     for item in xml_root.findall('./Video'):
         try:
             lst_res.append((item.attrib['ratingKey'],item.attrib['title'],item.attrib['originallyAvailableAt']))
@@ -164,10 +164,22 @@ def getCollectionContentFromXmL(f_plex_coll_content):
             print("woops, didn't find some items...")
             pass
     return lst_res
+
+def getFilmSearchContentFromXml(f_mov_search_content):
+    xml_root = parse_xml_get_root(f_mov_search_content)
+    lst_res = []
+    for item in xml_root.findall("./Hub[@hubIdentifier='movie']/Video"):
+        try:
+            lst_res.append((item.attrib['ratingKey'],item.attrib['title'],item.attrib['originallyAvailableAt']))
+        except KeyError:
+            print("woops, didn't find some items...")
+            pass
+    return lst_res
+        
+    
     
 
 def check_xml_existence(f_name):
-    # TODO: chg path to root of user
     f_path = get_write_dir()+"\\"+f_name
     print(f_path)
     if os.path.isfile(f_path):
@@ -211,14 +223,19 @@ def show_help():
     print(help_string)
     exit(0)
 
-def prepTups(lst_tups):
+def prepTups2(lst_tups):
     tup_for_tup = ['Key: %s --> Name: %s\n' % tup for tup in lst_tups]
+    str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
+    return str_tup_for_tup
+
+def prepTups3(lst_tups):
+    tup_for_tup = ['Key: %s --> Name: %s ---> Released: %s\n' % tup for tup in lst_tups]
     str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
     return str_tup_for_tup
 
 def show_libraries(fname):
     lst_libs = getLibsFromXmL(fname)
-    str_tup_for_tup = prepTups(lst_libs) 
+    str_tup_for_tup = prepTups2(lst_libs) 
     print(
     """
     AVAILABLE LIBRARIES:\n\n {}
@@ -227,7 +244,7 @@ def show_libraries(fname):
 
 def show_collections(fname):
     lst_collections = getCollectionsFromXmL(fname)
-    str_tup_for_tup = prepTups(lst_collections)
+    str_tup_for_tup = prepTups2(lst_collections)
     print(
     """
     COLLECTIONS in this LIBRARY:\n\n {}
@@ -236,12 +253,21 @@ def show_collections(fname):
 
 def show_collection_content(fname):
     lst_coll_content = getCollectionContentFromXmL(fname)
-    tup_for_tup = ['Key: %s --> Name: %s ---> Released: %s\n' % tup for tup in lst_coll_content]
-    str_tup_for_tup = ', '.join(tup_for_tup).replace(',','')
+    str_tup_for_tup = prepTups3(lst_coll_content)
     print(
     """
     FILMS in this COLLECTION:\n\n {}
     """.format(str_tup_for_tup)
     )
+
+def show_film_search_content(fname):
+    lst_film_search_content = getFilmSearchContentFromXml(fname)
+    str_tup_for_tup = prepTups3(lst_film_search_content)
+    print(
+    """
+    FILMS in this SEARCH:\n\n {}
+    """.format(str_tup_for_tup)
+    )
+    
 
 
