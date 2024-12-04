@@ -175,8 +175,29 @@ def getFilmSearchContentFromXml(f_mov_search_content):
             print("woops, didn't find some items...")
             pass
     return lst_res
-        
-    
+
+# TODO: change elem pos here
+# TODO: present user with potential unparsed film title((s) count)
+def parseFilmNames(film_data):
+    for blob in film_data:
+        print(blob[1])
+        if "RARBG" in blob[1]:
+            lst_blob = blob[1].split('.')
+            for elem in lst_blob:
+                if elem.isdigit():
+                    lst_title = lst_blob[:lst_blob.index(elem)]
+                    title = ' '.join(lst_title)
+            # change_title_in_plex(blob[0],title)
+            print(str(title) + "->" + str(blob[0]))
+        if "nickarad" in blob[1]:
+            film_title = blob[1].split(" (")[0]
+            print(str(film_title) + "->" + str(blob[0]))
+        if "[H264-mp4]" in blob[1]:
+            film_title_prep = blob[1].split("- ")[0].split(' ')
+            if film_title_prep[0].isdigit():
+                film_title_prep.pop(0)
+            film_title = ' '.join(film_title_prep)
+            print(str(film_title) + "->" + str(blob[0]))
     
 
 def check_xml_existence(f_name):

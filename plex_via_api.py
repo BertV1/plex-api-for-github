@@ -1,8 +1,6 @@
-import requests
 import ssl
 import helper_funcs as help
 import helper_creds as creds
-import os
 import sys
 
 ssl.SSLContext.verify_mode == ssl.VerifyMode.CERT_OPTIONAL
@@ -23,11 +21,11 @@ STATIC_FILES = {
     'FILM_SEARCH':'plex_film_search_list.xml'
     }
 # base URL, usually does not change.
-
+UPDATE = True
 
 def get_server_settings(str_base_url,lst_token):
     
-    if help.check_xml_existence(STATIC_FILES['SERVER_SETTINGS']):
+    if help.check_xml_existence(STATIC_FILES['SERVER_SETTINGS']) and not UPDATE:
         print("file already exists")
         exit(0)
     url_elems = ['',lst_token]
@@ -40,7 +38,7 @@ def get_server_settings(str_base_url,lst_token):
     
 def get_libraries(str_base_url,lst_token):
     
-    if help.check_xml_existence(STATIC_FILES['LIBRARIES']):
+    if help.check_xml_existence(STATIC_FILES['LIBRARIES']) and not UPDATE:
         help.show_libraries(STATIC_FILES['LIBRARIES'])
         exit(0)
     
@@ -54,7 +52,7 @@ def get_libraries(str_base_url,lst_token):
 
 # TODO: dynamic filename based on libkey
 def get_library_content(str_base_url,lst_token,lib_key):
-    if help.check_xml_existence(STATIC_FILES['LIB_CONTENT']):
+    if help.check_xml_existence(STATIC_FILES['LIB_CONTENT']) and not UPDATE:
         print("file already exists.")
         exit(0)
     
@@ -67,7 +65,7 @@ def get_library_content(str_base_url,lst_token,lib_key):
     
 def get_collections(str_base_url,lst_token,lib_key):
     
-    if help.check_xml_existence(STATIC_FILES['COLLECTIONS']):
+    if help.check_xml_existence(STATIC_FILES['COLLECTIONS']) and not UPDATE:
         help.show_collections(STATIC_FILES['COLLECTIONS'])
         exit(0)
     
@@ -80,7 +78,7 @@ def get_collections(str_base_url,lst_token,lib_key):
 
 def get_collection_content(str_base_url,lst_token,lib_key,coll_key):
     fname = coll_key+"-"+STATIC_FILES['COLLECTION']
-    if help.check_xml_existence(fname):
+    if help.check_xml_existence(fname) and not UPDATE:
         print("file already exists.")
         help.show_collection_content(fname)
         exit(0)
@@ -95,7 +93,7 @@ def get_collection_content(str_base_url,lst_token,lib_key,coll_key):
 def get_film_by_key(str_base_url,lst_token,mov_key):
     
     fname = mov_key+"-"+STATIC_FILES['FILM']
-    if help.check_xml_existence(fname):
+    if help.check_xml_existence(fname) and not UPDATE:
         exit(0)
     
     url_elems=[["library","metadata",mov_key],lst_token]
@@ -104,12 +102,11 @@ def get_film_by_key(str_base_url,lst_token,mov_key):
     
     help.write_xml(req_resp,fname)
 
-
 def get_films_by_terms(str_base_url,lst_token,str_terms):
     
     fname = str_terms.replace(' ','-')+"-"+STATIC_FILES['FILM_SEARCH']
     
-    if help.check_xml_existence(fname):
+    if help.check_xml_existence(fname) and not UPDATE:
         help.show_film_search_content(fname)
         exit(0)
     
@@ -123,7 +120,20 @@ def get_films_by_terms(str_base_url,lst_token,str_terms):
     
     help.write_xml(req_resp,fname)
     help.show_film_search_content(fname)
-    
+
+# update_url = "https:///library/sections/1/all?type=1&id=" + str(movie_id) + "&includeExternalMedia=1&title.value=" + parsed_correct_title + "&title.locked=1&X-Plex-Token="
+def update_filmTitles_by_collId(str_base_url, lst_token,coll_key):
+    fname = coll_key+"-"+STATIC_FILES['COLLECTION']
+    if help.check_xml_existence(fname) and not UPDATE:
+        print("file already exists.")
+
+    # get coll
+    url_elems = [["library","collections",coll_key,"children"],lst_token]
+    req_url = str_base_url + help.build_request_url_elems(url_elems)
+    req_resp = help.make_request(req_url)
+    help.write_xml(req_resp,fname)
+
+
             
 STATIC_ARGS = ['-c','-h','-s','-l','-m']
 if __name__ == "__main__":
@@ -142,6 +152,7 @@ if __name__ == "__main__":
             if lst_args[1] == '-s':
                 get_server_settings(base_url,plex_token)
             if lst_args[1] == '-l':
+
                 get_libraries(base_url,plex_token)
                 exit(0)
     if arg_count == 3:
@@ -155,7 +166,7 @@ if __name__ == "__main__":
         if lst_args[1] == '-m':
             if lst_args[2] == '-key' and lst_args[3].isdigit():
                 get_film_by_key(base_url,plex_token,lst_args[3])
-                print("IN GETTING A FILM BY KEY FUNC")
+                print("IN GETTING A FkILM BY KEY FUNC")
             if lst_args[2] == '-term':
                 get_films_by_terms(base_url,plex_token,lst_args[3])
                 print("GETTING A FILM BY TERM")
