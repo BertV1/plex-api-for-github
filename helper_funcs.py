@@ -90,10 +90,16 @@ def build_request_url_elems(lst_args,end_slash=None):
 ######################
 ######################
     
-def make_request(str_req_url):
+def get_request(str_req_url):
     print(str_req_url)
     req_resp = requests.get(str_req_url, verify=False)
     return req_resp.content
+
+def put_request(str_req_url):
+    print(str_req_url)
+    req_resp = requests.put(str_req_url,verify=False)
+    return req_resp.content
+
 
 ############################
 ############################
@@ -178,27 +184,28 @@ def getFilmSearchContentFromXml(f_mov_search_content):
 
 # TODO: change elem pos here
 # TODO: present user with potential unparsed film title((s) count)
-def parseFilmNames(film_data):
+# film_data = [(ratingkey,title,originallyavailableat),...]
+def parse_titles(film_data):
+    # ratingkey-filmTitle
+    lst_res = []
     for blob in film_data:
-        print(blob[1])
         if "RARBG" in blob[1]:
             lst_blob = blob[1].split('.')
             for elem in lst_blob:
                 if elem.isdigit():
                     lst_title = lst_blob[:lst_blob.index(elem)]
                     title = ' '.join(lst_title)
-            # change_title_in_plex(blob[0],title)
-            print(str(title) + "->" + str(blob[0]))
+                    lst_res.append([blob[0],title])
         if "nickarad" in blob[1]:
-            film_title = blob[1].split(" (")[0]
-            print(str(film_title) + "->" + str(blob[0]))
+            title = blob[1].split(" (")[0]
+            lst_res.append([blob[0],title])
         if "[H264-mp4]" in blob[1]:
             film_title_prep = blob[1].split("- ")[0].split(' ')
             if film_title_prep[0].isdigit():
                 film_title_prep.pop(0)
-            film_title = ' '.join(film_title_prep)
-            print(str(film_title) + "->" + str(blob[0]))
-    
+            title = ' '.join(film_title_prep)
+            lst_res.append([blob[0],title])
+    return lst_res
 
 def check_xml_existence(f_name):
     f_path = get_write_dir()+"\\"+f_name
@@ -239,6 +246,7 @@ def show_help():
     \n -m -key film_key\t get film properties by film_key, stored in xml file. Returns NO if film is not found.
     \n -c lib_key\t get all collections of a library, stored in xml file, and show them. Key: see -l.
     \n -c lib_key coll_key get content of a collection identified by coll_key, located in library identified by lib_key.
+    \n -c lib_key coll_key -update normalize \tmedia titles in collection.
     \n XML files are stored in user home.
     """
     print(help_string)

@@ -1,28 +1,16 @@
 # plex-api-for-github
- get things done with plex via api (another one)
+admin script for a plex server. quick and easy data viewing, manipulation.
 
 ## what can you do
 
 * get (your) server settings
-  * xml output
 * get a list of your libraries
-  * xml output
-  * shown
 * get full content of your libraries
-  * xml output
 * get a list of your collections (by library)
-  * xml output
-  * shown
 * get a list of films in your collections
-  * xml output
-  * shown
 * get a film by key
-  * xml output
-  * shown
 * get film(s) by search term(s)
-  * xml output
-  * shown
-* a functional (?) script
+* clean film titles by collection
 
 ## TODO
 
@@ -61,7 +49,7 @@ For now, it should be able to handle the following requests:
 - get_collection_content: https://192.168.0.33:32400/library/collections/8469/children?X-Plex-Token=XXX
 - get_a_film:  https://192.168.0.33:32400/library/metadata/123456?X-Plex-Token=XXX
 - ==search_films_by_terms==: https://192.168.0.33:32400/hubs/search/?X-Plex-Token=XXX&query=stringstringstring&limit=100&sectionId=1
-  - has an irregular format!
+- update_filmTitles_by_collId: https:///library/sections/1/all?type=1&id=mov_id&includeExternalMedia=1&title.value=stringstring&title.locked=1&X-Plex-Token=XXX
 
 ```python
     make_requests
