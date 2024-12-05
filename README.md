@@ -16,53 +16,56 @@ admin script for a plex server. quick and easy data viewing, manipulation.
 
 ### prio’s:
 
-* merge mass-film-name-editor-given-a-collection into main script
-  * ~~get collections of a library~~
-  * ~~get collection content by key (after having being shown the collections)~~
-  * ~~search by terms~~
-  * update film properties (title)
-* actually use ssl
+merge mass-film-name-editor-given-a-collection into main script
+- [x] get collections of a library
+- [x] get collection content by key (after having being shown the collections)
+- [x] search by terms
+- [x] update film titles
+
+use “”“ssl”“” …
+
+update param for
 
 ### interesting:
 
-* ==get props (any) of a film given a name (search term)==
-* change props (any, as in, any that are possible to chg) of a given film by name
+- [x] get props (any) of a film given a name (search term)
+- [ ] change props (any, as in, any that are possible to chg) of a given film by name
 
 ### nice to have:
 
-* get collection by name
-* create collection by name
-* add films to collection by (name,name)
-  * eg: 
-    * user req: i want all films produced by the **Weinstein** Company in a collection named “**TO AVOID**” 
+- [ ] get collection by name
+- [ ] create collection by name
+- [ ] add films to collection by (name,name)
+  * user req: i want all films produced by the **Weinstein** Company in a collection named “**TO AVOID**” 
 
 ## request
 
-generic function which ideally should work for every request:
-For now, it should be able to handle the following requests:
+Request builder functions handle all kinds of API requests:
 
-- server_settings:        https://192.168.0.33:32400/?X-Plex-Token=XXX
-- get_libraries:          https://192.168.0.33:32400/library/sections?X-Plex-Token=XXX
-- get_library_content:    https://192.168.0.33:32400/library/sections/1/all?X-Plex-Token=XXX
-- get_collections:        https://192.168.0.33:32400/library/sections/1/collection?X-Plex-Token=XXX
-- get_collection_content: https://192.168.0.33:32400/library/sections/1/all?collection=3441&X-Plex-Token=XXX
-- get_collection_content: https://192.168.0.33:32400/library/collections/8469/children?X-Plex-Token=XXX
-- get_a_film:  https://192.168.0.33:32400/library/metadata/123456?X-Plex-Token=XXX
-- ==search_films_by_terms==: https://192.168.0.33:32400/hubs/search/?X-Plex-Token=XXX&query=stringstringstring&limit=100&sectionId=1
-- update_filmTitles_by_collId: https:///library/sections/1/all?type=1&id=mov_id&includeExternalMedia=1&title.value=stringstring&title.locked=1&X-Plex-Token=XXX
+| func                        | url                                                          |
+| --------------------------- | ------------------------------------------------------------ |
+| server_settings             | https://192.168.0.33:32400/?X-Plex-Token=XXX                 |
+| get_libraries               | https://192.168.0.33:32400/library/sections?X-Plex-Token=XXX |
+| get_library_content         | https://192.168.0.33:32400/library/sections/lib_id/all?X-Plex-Token=XXX |
+| get_collections             | https://192.168.0.33:32400/library/sections/lib_id/collection?X-Plex-Token=XXX |
+| get_collection_content      | https://192.168.0.33:32400/library/sections/lib_id/all?collection=coll_id&X-Plex-Token=XXX |
+| get_collection_content      | https://192.168.0.33:32400/library/collections/coll_id/children?X-Plex-Token=XXX |
+| get_a_film                  | https://192.168.0.33:32400/library/metadata/mov_id?X-Plex-Token=XXX |
+| search_films_by_terms       | https://192.168.0.33:32400/hubs/search/?X-Plex-Token=XXX&query=stringstringstring&limit=100&sectionId=1 |
+| update_filmTitles_by_collId | https:///library/sections/1/all?type=1&id=mov_id&includeExternalMedia=1&title.value=stringstring&title.locked=1&X-Plex-Token=XXX |
 
 ```python
     make_requests
             (
-                "https://192.168.0.33:32400",
+                base_url,
                 [  # the url parts
                     "library/sections",
-                    "1",
+                    lib_id,
                     "all"
                 ],
                 [  # the args
-                    ["collection",3441],
-                    ["X-Plex-Token","XXX"]
+                    ["collection",coll_id],
+                    plex_token
                 ]
             )
 ```

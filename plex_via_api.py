@@ -2,13 +2,15 @@ import ssl
 import helper_funcs as help
 import helper_creds as creds
 import sys
+import argparse
 
 ssl.SSLContext.verify_mode == ssl.VerifyMode.CERT_OPTIONAL
 
+# todo: fix plex token pass
 plex_token_instance=creds.get_plex_token()
 plex_url=[creds.get_plex_url()[0],creds.get_plex_url()[1],32400]
 plex_token = [["X-Plex-Token",plex_token_instance]]
-
+plex_token_new = ["X-Plex-Token",plex_token_instance]
 STATIC_FILES = {
     'SERVER_SETTINGS':'plex_server_settings.xml',
     'LIBRARIES':'plex_library_list.xml',
@@ -23,7 +25,7 @@ UPDATE = False
 
 def get_server_settings(str_base_url,lst_token):
     
-    if help.check_xml_existence(STATIC_FILES['SERVER_SETTINGS']) and not UPDATE:
+    if help.check_xml_existence(STATIC_FILES['SERVER_SETTINGS']) and not bool_update:
         print("file already exists")
         exit(0)
     url_elems = ['',lst_token]
@@ -35,7 +37,7 @@ def get_server_settings(str_base_url,lst_token):
     
 def get_libraries(str_base_url,lst_token):
     
-    if help.check_xml_existence(STATIC_FILES['LIBRARIES']) and not UPDATE:
+    if help.check_xml_existence(STATIC_FILES['LIBRARIES']) and not bool_update:
         print("file already exists")
         help.show_libraries(STATIC_FILES['LIBRARIES'])
         exit(0)
@@ -49,7 +51,7 @@ def get_libraries(str_base_url,lst_token):
 
 # TODO: dynamic filename based on libkey
 def get_library_content(str_base_url,lst_token,lib_key):
-    if help.check_xml_existence(STATIC_FILES['LIB_CONTENT']) and not UPDATE:
+    if help.check_xml_existence(STATIC_FILES['LIB_CONTENT']) and not bool_update:
         print("file already exists.")
         exit(0)
     
@@ -61,7 +63,7 @@ def get_library_content(str_base_url,lst_token,lib_key):
     
 def get_collections(str_base_url,lst_token,lib_key):
     
-    if help.check_xml_existence(STATIC_FILES['COLLECTIONS']) and not UPDATE:
+    if help.check_xml_existence(STATIC_FILES['COLLECTIONS']) and not bool_update:
         help.show_collections(STATIC_FILES['COLLECTIONS'])
         exit(0)
     
@@ -74,7 +76,7 @@ def get_collections(str_base_url,lst_token,lib_key):
 
 def get_collection_content(str_base_url,lst_token,lib_key,coll_key):
     fname = coll_key+"-"+STATIC_FILES['COLLECTION']
-    if help.check_xml_existence(fname) and not UPDATE:
+    if help.check_xml_existence(fname) and not bool_update:
         print("file already exists.")
         help.show_collection_content(fname)
         exit(0)
@@ -89,7 +91,7 @@ def get_collection_content(str_base_url,lst_token,lib_key,coll_key):
 def get_film_by_key(str_base_url,lst_token,mov_key):
     
     fname = mov_key+"-"+STATIC_FILES['FILM']
-    if help.check_xml_existence(fname) and not UPDATE:
+    if help.check_xml_existence(fname) and not bool_update:
         exit(0)
     
     url_elems=[["library","metadata",mov_key],lst_token]
@@ -102,7 +104,7 @@ def get_films_by_terms(str_base_url,lst_token,str_terms):
     
     fname = str_terms.replace(' ','-')+"-"+STATIC_FILES['FILM_SEARCH']
     
-    if help.check_xml_existence(fname) and not UPDATE:
+    if help.check_xml_existence(fname) and not bool_update:
         help.show_film_search_content(fname)
         exit(0)
     
@@ -117,14 +119,13 @@ def get_films_by_terms(str_base_url,lst_token,str_terms):
     help.write_xml(req_resp,fname)
     help.show_film_search_content(fname)
 
-# update_url = "https:///library/sections/1/all?type=1&id=" + str(movie_id) + "&includeExternalMedia=1&title.value=" + parsed_correct_title + "&title.locked=1&X-Plex-Token="
-def update_filmTitles_by_collId(str_base_url,lst_token,lib_key,coll_key):
+def update_filmTitles_by_collId(str_base_url,lst_plex_token,lib_key,coll_key):
 
     fname = coll_key+"-"+STATIC_FILES['COLLECTION']
-    if help.check_xml_existence(fname) and not UPDATE:
+    if help.check_xml_existence(fname) and not bool_update:
         print("file already exists.")
     else:
-        url_elems = [["library","collections",coll_key,"children"],lst_token]
+        url_elems = [["library","collections",coll_key,"children"],lst_plex_token]
         req_url = str_base_url + help.build_request_url_elems(url_elems)
         req_resp = help.get_request(req_url)
         help.write_xml(req_resp,fname)
@@ -132,21 +133,33 @@ def update_filmTitles_by_collId(str_base_url,lst_token,lib_key,coll_key):
     updated_movies = help.parse_titles(coll_content)
 
     for updated_film in updated_movies:
-        lst_token.append(["type","1"])
-        lst_token.append(["id",updated_film[0]])
-        lst_token.append(["includeExternalMedia","1"])
-        lst_token.append(["title.value",updated_film[1]])
-        lst_token.append(["title.locked","1"])
-        url_elems = [["library","sections",lib_key,"all"],lst_token]
+        lst_tokens = []
+        lst_tokens.append(["type","1"])
+        lst_tokens.append(["id",updated_film[0]])
+        lst_tokens.append(["includeExternalMedia","1"])
+        lst_tokens.append(["title.value",updated_film[1]])
+        lst_tokens.append(["title.locked","1"])
+        lst_tokens.append(lst_plex_token)
+        url_elems = [["library","sections",lib_key,"all"],lst_tokens]
         my_url = str_base_url+help.build_request_url_elems(url_elems)
-        print(my_url)
-        # req_resp = help.put_request(req_url)
+        help.put_request(my_url)
 
+def contentUpdate(lst_prog_arg_list):
+    if '-new' in lst_prog_arg_list:
+        return True
+    else:
+        return False
+
+bool_update = False
 STATIC_ARGS = ['-c','-h','-s','-l','-m']
 if __name__ == "__main__":
-    # sth akin to init_conn
     base_url = help.create_url(plex_url[1],plex_url[0],plex_url[2])
-    
+    bool_update = contentUpdate(sys.argv)
+    # UPDATER
+    if bool_update == True:
+        print(bool_update)
+        sys.argv.pop(sys.argv.index("-new"))
+
     lst_args = sys.argv
     arg_count = len(sys.argv)
 
@@ -176,15 +189,10 @@ if __name__ == "__main__":
                 get_films_by_terms(base_url,plex_token,lst_args[3])
     if arg_count == 5:
         # -c lib_key coll_key -update
-        print("updating titles by coll")
         if lst_args[1] == '-c' and help.lib_key_exists(lst_args[2]) and help.coll_key_exists(lst_args[3]) and lst_args[4] == '-update':
-            print("args OK")
-            update_filmTitles_by_collId(base_url,plex_token,lst_args[2],lst_args[3])
+            update_filmTitles_by_collId(base_url,plex_token_new,lst_args[2],lst_args[3])
     else:
         help.show_help()
-            
-       
-    
     
     
     

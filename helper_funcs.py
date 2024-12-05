@@ -238,8 +238,8 @@ def coll_key_exists(coll_key):
 
 def show_help():
     help_string ="""
-    PLEX SCRIPTOR: python script.py [args]\n
-    \n -h\t\t\t\t get this help menu. If no args are supplied, also shows this help menu.
+    PLEX SCRIPTOR: python script.py [-new] args\n
+    \n -h\t\t\t\t get this help menu. If no args are supplied, also show this help menu.
     \n -s\t\t\t\t get server settings, stored in xml file
     \n -l\t\t\t\t get libraries, stored in xml file, and show them.
     \n -l lib_key\t\t\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
@@ -249,6 +249,8 @@ def show_help():
     \n -c lib_key coll_key\t\t get content of a collection identified by coll_key, located in library identified by lib_key.
     \n -c lib_key coll_key -update\t normalize media titles in collection.
     \n XML files are stored in user home.
+    \n -------- COMMON ARGUMENTS --------
+    \n -new\t\t Tells the script to not look for existing files in user home. Without it, it will check for existing data.
     """
     print(help_string)
     exit(0)
