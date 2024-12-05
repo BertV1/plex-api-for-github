@@ -9,8 +9,6 @@ plex_token_instance=creds.get_plex_token()
 plex_url=[creds.get_plex_url()[0],creds.get_plex_url()[1],32400]
 plex_token = [["X-Plex-Token",plex_token_instance]]
 
-# TODO: rewrite this so that we can create dynamic filenames,
-# eg: 'libraries':['plex_lib_list','.xml']
 STATIC_FILES = {
     'SERVER_SETTINGS':'plex_server_settings.xml',
     'LIBRARIES':'plex_library_list.xml',
@@ -21,7 +19,7 @@ STATIC_FILES = {
     'FILM_SEARCH':'plex_film_search_list.xml'
     }
 # base URL, usually does not change.
-UPDATE = True
+UPDATE = False
 
 def get_server_settings(str_base_url,lst_token):
     
@@ -35,10 +33,10 @@ def get_server_settings(str_base_url,lst_token):
     help.write_xml(req_resp,STATIC_FILES['SERVER_SETTINGS'])
     exit(0)
     
-    
 def get_libraries(str_base_url,lst_token):
     
     if help.check_xml_existence(STATIC_FILES['LIBRARIES']) and not UPDATE:
+        print("file already exists")
         help.show_libraries(STATIC_FILES['LIBRARIES'])
         exit(0)
     
@@ -48,7 +46,6 @@ def get_libraries(str_base_url,lst_token):
     
     help.write_xml(req_resp,STATIC_FILES['LIBRARIES'])
     help.show_libraries(STATIC_FILES['LIBRARIES'])
-
 
 # TODO: dynamic filename based on libkey
 def get_library_content(str_base_url,lst_token,lib_key):
@@ -61,7 +58,6 @@ def get_library_content(str_base_url,lst_token,lib_key):
     req_resp = help.get_request(req_url)
     
     help.write_xml(req_resp,STATIC_FILES['LIB_CONTENT'])
-    
     
 def get_collections(str_base_url,lst_token,lib_key):
     
@@ -122,7 +118,8 @@ def get_films_by_terms(str_base_url,lst_token,str_terms):
     help.show_film_search_content(fname)
 
 # update_url = "https:///library/sections/1/all?type=1&id=" + str(movie_id) + "&includeExternalMedia=1&title.value=" + parsed_correct_title + "&title.locked=1&X-Plex-Token="
-def update_filmTitles_by_collId(str_base_url, lst_token,lib_key,coll_key):
+def update_filmTitles_by_collId(str_base_url,lst_token,lib_key,coll_key):
+
     fname = coll_key+"-"+STATIC_FILES['COLLECTION']
     if help.check_xml_existence(fname) and not UPDATE:
         print("file already exists.")
@@ -131,8 +128,6 @@ def update_filmTitles_by_collId(str_base_url, lst_token,lib_key,coll_key):
         req_url = str_base_url + help.build_request_url_elems(url_elems)
         req_resp = help.get_request(req_url)
         help.write_xml(req_resp,fname)
-    # update films
-
     coll_content = help.getCollectionContentFromXmL(fname)
     updated_movies = help.parse_titles(coll_content)
 
@@ -143,13 +138,10 @@ def update_filmTitles_by_collId(str_base_url, lst_token,lib_key,coll_key):
         lst_token.append(["title.value",updated_film[1]])
         lst_token.append(["title.locked","1"])
         url_elems = [["library","sections",lib_key,"all"],lst_token]
-        req_url = str_base_url+help.build_request_url_elems(url_elems)
-        print(req_url)
+        my_url = str_base_url+help.build_request_url_elems(url_elems)
+        print(my_url)
         # req_resp = help.put_request(req_url)
 
-
-
-            
 STATIC_ARGS = ['-c','-h','-s','-l','-m']
 if __name__ == "__main__":
     # sth akin to init_conn
@@ -180,10 +172,8 @@ if __name__ == "__main__":
         if lst_args[1] == '-m':
             if lst_args[2] == '-key' and lst_args[3].isdigit():
                 get_film_by_key(base_url,plex_token,lst_args[3])
-                print("IN GETTING A FkILM BY KEY FUNC")
             if lst_args[2] == '-term':
                 get_films_by_terms(base_url,plex_token,lst_args[3])
-                print("GETTING A FILM BY TERM")
     if arg_count == 5:
         # -c lib_key coll_key -update
         print("updating titles by coll")
