@@ -24,7 +24,12 @@ merge mass-film-name-editor-given-a-collection into main script
 
 use “”“ssl”“” …
 
-update param for
+other:
+
+- [x] add the option to use new data if existing data is already present on user system. 
+- [ ] use a more efficient and clean way to interact with the data, but avoid outgrowing the scope of the project with tech like databases.
+  - [ ] checkout: memcached, cachetools
+- [ ] 
 
 ### interesting:
 

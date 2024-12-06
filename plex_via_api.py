@@ -144,6 +144,20 @@ def update_filmTitles_by_collId(str_base_url,lst_plex_token,lib_key,coll_key):
         my_url = str_base_url+help.build_request_url_elems(url_elems)
         help.put_request(my_url)
 
+# todo: create a collection, add media items
+# todo: offer enough checks, store results
+# todo: let user rerun with conf arg (?)
+
+def creat_coll_with_items(str_base_url,lst_plex_token,lib_key):
+    # todo: post request to xxxx
+    url_elems = [["",""],lst_plex_token]
+    # todo: confirm that one exist
+    # todo: add items to it
+    # todo: show it
+
+
+
+
 def contentUpdate(lst_prog_arg_list):
     if '-new' in lst_prog_arg_list:
         return True

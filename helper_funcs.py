@@ -239,18 +239,18 @@ def coll_key_exists(coll_key):
 def show_help():
     help_string ="""
     PLEX SCRIPTOR: python script.py [-new] args\n
+    \n XML files are stored in user home.
     \n -h\t\t\t\t get this help menu. If no args are supplied, also show this help menu.
     \n -s\t\t\t\t get server settings, stored in xml file
     \n -l\t\t\t\t get libraries, stored in xml file, and show them.
-    \n -l lib_key\t\t\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been executed at least once.
-    \n -m -term "<terms>"\t\t search for films given your term(s). Terms must be in "". returns matching film data in xml, and shows the film info.
+    \n -l lib_key\t\t\t get content of a library, identified by key. Key must be a valid library key. Requires -l to have been\n\t\t\t\t executed at least once.
+    \n -m -term "<terms>"\t\t search for films given your term(s). Terms must be in "". returns matching film data in xml, and\n\t\t\t\t shows the film info.
     \n -m -key film_key\t\t get film properties by film_key, stored in xml file. Returns NO if film is not found.
     \n -c lib_key\t\t\t get all collections of a library, stored in xml file, and show them. Key: see -l.
     \n -c lib_key coll_key\t\t get content of a collection identified by coll_key, located in library identified by lib_key.
     \n -c lib_key coll_key -update\t normalize media titles in collection.
-    \n XML files are stored in user home.
     \n -------- COMMON ARGUMENTS --------
-    \n -new\t\t Tells the script to not look for existing files in user home. Without it, it will check for existing data.
+    \n -new\t\t\t\t Tells the script to not look for existing files in user home. Without it, it will use existing data if\n\t\t\t\t present.
     """
     print(help_string)
     exit(0)
